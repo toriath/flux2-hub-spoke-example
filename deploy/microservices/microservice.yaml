@@ -39,3 +39,9 @@ metadata:
   name: microservices-podinfo
 data:
   MY_ENV: "MyValue"
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: microservices-podinfo
+  namespace: microservices
