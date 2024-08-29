@@ -121,7 +121,6 @@ metadata:
 spec:
   dependsOn:
     - name: apps
-  targetNamespace: microservices
   interval: 1h
   retryInterval: 3m
   timeout: 5m
@@ -136,3 +135,4 @@ spec:
     secretRef:
       name: cluster-kubeconfig
   serviceAccountName: flux-restricted
+  targetNamespace: microservices
