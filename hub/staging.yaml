@@ -112,3 +112,27 @@ spec:
         - op: add
           path: /spec/serviceAccountName
           value: flux-restricted
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: microservices
+  namespace: staging
+spec:
+  dependsOn:
+    - name: apps
+  targetNamespace: staging
+  interval: 1h
+  retryInterval: 3m
+  timeout: 5m
+  prune: true
+  wait: true
+  path: ./clusters/staging/microservices
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  kubeConfig:
+    secretRef:
+      name: cluster-kubeconfig
+  serviceAccountName: flux-restricted
