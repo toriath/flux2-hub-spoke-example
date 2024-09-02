@@ -24,3 +24,4 @@ bin/
 
 .idea/
 scripts/github.sh
+pipeline-token

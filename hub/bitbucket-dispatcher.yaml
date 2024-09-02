@@ -1,0 +1,61 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: HelmRepository
+metadata:
+  labels:
+    app.kubernetes.io/name: bpdispatcher
+  name: bpdispatcher
+  namespace: flux-system
+spec:
+  interval: 1h0m0s
+  url: https://brainfair.github.io/flux2-bitbucketpipeline-dispatcher
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: bpdispatcher
+  namespace: flux-system
+spec:
+  chart:
+    spec:
+      chart: bpdispatcher
+      sourceRef:
+        kind: HelmRepository
+        name: bpdispatcher
+  interval: 1h0m0s
+  values:
+    env:
+      ACCESS_TOKEN: token_here
+      REPO_OWNER: dgg-devops
+      REPO_SLUG: fluxcd-demo
+      PIPELINE_REF: master
+  valuesFrom:
+    - kind: Secret
+      name: bpdispatcher
+---
+apiVersion: notification.toolkit.fluxcd.io/v1beta2
+kind: Provider
+metadata:
+  name: generic
+  namespace: bpdispatcher
+spec:
+  type: generic
+  address: http://bpdispatcher.bpdispatcher/webhook
+---
+apiVersion: notification.toolkit.fluxcd.io/v1beta2
+kind: Alert
+metadata:
+  name: test-dispatch
+  namespace: bpdispatcher
+spec:
+  providerRef:
+    name: generic
+  summary: "env=stg"
+  eventSeverity: info
+  eventSources:
+    - kind: HelmRelease
+      name: '*'
+  exclusionList:
+    - ".*upgrade.*has.*started"
+    - ".*is.*not.*ready"
+    - "^Dependencies.*"
